@@ -1,0 +1,19 @@
+FROM rockylinux:9.3.20231119
+LABEL MAINTAINER = "shashwat"
+
+RUN yum update -y && \
+    yum install httpd unzip net-tools -y
+RUN yum install epel-release -y
+RUN dnf install https://rpms.remirepo.net/enterprise/remi-release-9.rpm -y
+
+RUN yum install php74 -y
+RUN sed -i 's|enabled=0|enabled=1|g' /etc/yum.repos.d/remi-php74.repo
+WORKDIR  /var/www/html
+
+ADD https://wordpress.org/latest.zip /var/www/html
+RUN unzip latest.zip && \
+    rm -f latest.zip
+
+EXPOSE 80 443
+
+CMD ["/usr/sbin/httpd","-D","FOREGROUND"]
